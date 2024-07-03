@@ -1,0 +1,102 @@
+---
+title: "word_to_xlsx"
+author: "Jayce Everetts"
+format: pdf
+editor: visual
+---
+
+## Set Up
+
+```{r}
+#| label: set-up
+
+# Import necessary packages
+library(officer)
+library(openxlsx)
+```
+
+## Purpose
+
+Bahhhhhh
+
+## Function
+
+```{r}
+#| label: word-to-xlsx-fn
+
+doc_to_excel <- function(.import_doc_path, .export_xlsx_path, .descriptor_set_path) {
+  
+  # Read the Word document
+  doc <- officer::read_docx(.import_doc_path)
+  
+  # Extract paragraphs
+  paragraphs <- officer::docx_summary(doc)
+  
+  # Initialize variables
+  excerpt_data <- data.frame(
+    Text = character(), 
+    Header1 = character(), 
+    Header2 = character(), 
+    stringsAsFactors = FALSE
+    )
+  
+  current_header1 <- NA
+  current_header2 <- NA
+  
+  # Process each paragraph
+  for (i in 1:nrow(paragraphs)) {
+    
+    text <- paragraphs$text[i]
+    
+    # Check for Header 1 pattern "<...>"
+    if (grepl("^<.*\\\\.*> - § .*", text)) {
+      current_header1 <- sub("^<.*\\\\(.*)> - § .*", "\\1", text)
+      current_header2 <- NA
+    } 
+    
+    # Check for Header 2 pattern "Reference _ - ..."
+    else if (grepl("^Reference \\d+ – ", text)) {
+      current_header2 <- text
+    } 
+    
+    # Process regular text
+    else if (nchar(text) > 0) {
+      
+      # Append the text to the data frame
+      excerpt_data <- rbind(excerpt_data,
+                            data.frame(
+                              Excerpt = text, 
+                              Media = current_header1, 
+                              stringsAsFactors = FALSE)
+      )
+    }
+  }
+  
+  ################################################
+  # See how NVivo does file/case classifications #
+  ################################################
+  
+  if(!is.na(.descriptor_set_path)){
+    
+    descriptor_data <- readxl::read_excel(.descriptor_set_path)
+    
+    excerpt_data <- merge(excerpt_data, descriptor_data,
+                          by = "Media", #### Maybe not
+                          all.x = TRUE)
+    
+  }
+  
+  openxlsx::write.xlsx(excerpt_data, .export_xlsx_path, rowNames = FALSE)
+
+  return(excerpt_data)
+  
+}
+```
+
+```{r}
+hey <- doc_to_excel(.import_doc_path = "/Users/jakehelpley/Desktop/Ex_NVivo_Excerpt.docx",
+                    .export_xlsx_path = "/Users/jakehelpley/Desktop/Ex_NVivo_Excerpt.xlsx",
+                    .descriptor_set_path = "/Users/jakehelpley/Desktop/Descriptor_set.xlsx")
+
+print(hey)
+```
