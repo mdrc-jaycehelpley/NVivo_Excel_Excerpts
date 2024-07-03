@@ -81,11 +81,13 @@ doc_to_excel <- function(.import_doc_path, .export_xlsx_path, .descriptor_set_pa
     descriptor_data <- readxl::read_excel(.descriptor_set_path)
     
     excerpt_data <- merge(excerpt_data, descriptor_data,
-                          by = "Media", #### Maybe not
+                          by = "Media", #### Maybe argument to set column name for descriptor_data
                           all.x = TRUE)
     
   }
-  
+
+  # Maybe create an default to create .xlsx with same name as Word doc
+  # saved in same location, unless .export_xlsx_path is not NA 
   openxlsx::write.xlsx(excerpt_data, .export_xlsx_path, rowNames = FALSE)
 
   return(excerpt_data)
@@ -94,9 +96,9 @@ doc_to_excel <- function(.import_doc_path, .export_xlsx_path, .descriptor_set_pa
 ```
 
 ```{r}
-hey <- doc_to_excel(.import_doc_path = "/Users/jakehelpley/Desktop/Ex_NVivo_Excerpt.docx",
-                    .export_xlsx_path = "/Users/jakehelpley/Desktop/Ex_NVivo_Excerpt.xlsx",
-                    .descriptor_set_path = "/Users/jakehelpley/Desktop/Descriptor_set.xlsx")
+test <- doc_to_excel(.import_doc_path = "~/Desktop/Ex_NVivo_Excerpt.docx",
+                     .export_xlsx_path = "~/Desktop/Ex_NVivo_Excerpt.xlsx",
+                     .descriptor_set_path = "~/Desktop/Descriptor_set.xlsx")
 
-print(hey)
+print(test)
 ```
