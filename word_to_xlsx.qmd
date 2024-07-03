@@ -1,6 +1,6 @@
 ---
 title: "word_to_xlsx"
-author: "Jayce Everetts"
+author: "Jayce Helpley"
 format: pdf
 editor: visual
 ---
@@ -17,7 +17,7 @@ library(openxlsx)
 
 ## Purpose
 
-Bahhhhhh
+[To fill out]
 
 ## Function
 
